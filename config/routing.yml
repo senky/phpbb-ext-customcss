@@ -1,0 +1,5 @@
+senky_customcss_controller:
+    path: /senky/{style_id}/custom.css
+    defaults: { _controller: senky.customcss.controller.main:handle }
+    requirements:
+        style_id: '\d+'

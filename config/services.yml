@@ -1,0 +1,31 @@
+parameters:
+    senky.customcss.tables.customcss: '%core.table_prefix%senky_customcss'
+
+services:
+    senky.customcss.controller.main:
+        class: senky\customcss\controller\main_controller
+        arguments:
+            - '@dbal.conn'
+            - '%senky.customcss.tables.customcss%'
+
+    senky.customcss.controller.acp:
+        class: senky\customcss\controller\acp_controller
+        arguments:
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '%tables.styles%'
+            - '%senky.customcss.tables.customcss%'
+
+    senky.customcss.listener:
+        class: senky\customcss\event\main_listener
+        arguments:
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+            - '@config'
+        tags:
+            - { name: event.listener }

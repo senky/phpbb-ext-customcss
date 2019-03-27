@@ -1,0 +1,64 @@
+{% include 'overall_header.html' %}
+
+<h1>{{ lang('ACP_CUSTOMCSS_TITLE') }}</h1>
+
+{% if S_EDIT %}
+	{% if S_ERROR %}
+		<div class="errorbox">
+			<h3>{{ lang('WARNING') }}</h3>
+			<p>{{ ERROR_MSG }}</p>
+		</div>
+	{% endif %}
+
+	<form method="post" action="{{ U_ACTION }}">
+		<fieldset>
+			<legend>{{ lang('SETTINGS') }}</legend>
+			<dl>
+				<dt><label>{{ lang('STYLE_NAME') ~ lang('COLON') }}</label></dt>
+				<dd>{{ STYLE_NAME }}</dd>
+			</dl>
+			<dl>
+				<dt><label for="customcss">{{ lang('CUSTOM_CSS') ~ lang('COLON') }}</label><br /><span>{{ lang('CUSTOM_CSS_EXPLAIN') }}</span></dt>
+				<dd><textarea id="customcss" name="customcss" cols="60" rows="20">{{ STYLE_CSS }}</textarea></dd>
+			</dl>
+			<dl>
+				<dt>&nbsp;</dt>
+				<dd>
+					<input class="button2" type="button" id="validate-css" value="{{ lang('VALIDATE_CSS') }}" />
+					<div id="validation-result" data-good="{{ lang('CSS_VALIDATION_SUCCESS') | e('html_attr') }}"></div>
+				</dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="submit" name="cancel" value="{{ lang('CANCEL') }}" />
+			<input type="hidden" name="action" value="edit" />
+			<input type="hidden" name="style_id" value="{{ STYLE_ID }}" />
+			{{ S_FORM_TOKEN }}
+		</fieldset>
+	</form>
+
+	{% INCLUDEJS '@senky_customcss/validator.js' %}
+{% else %}
+	<table class="table1 zebra-table" id="down">
+		<thead>
+			<tr>
+				<th>{{ lang('STYLE_NAME') }}</th>
+				<th>{{ lang('STYLE_CUSTOM_CSS') }}</th>
+				<th>{{ lang('ACTION') }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for style in styles %}
+				<tr>
+					<td><a href="{{ style.U_EDIT }}">{style.STYLE_NAME}</a></td>
+					<td>{% if style.HAS_CUSTOMCSS %}{{ lang('YES') | lower }}{% else %}{{ lang('NO') | lower }}{% endif %}</td>
+					<td class="actions"><a href="{{ style.U_EDIT }}">{{ ICON_EDIT }}</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endif %}
+
+{% include 'overall_footer.html' %}
