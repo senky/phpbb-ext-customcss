@@ -50,24 +50,21 @@ class acp_controller
 				}
 
 				$style_id = $this->request->variable('style', 0);
-
-				if ($style_id === 0)
-				{
-					$sql = 'SELECT style_id, css
-						FROM ' . $this->customcss_table . '
-						WHERE style_id = 0';
-				}
-				else
-				{
-					$sql = 'SELECT s.style_id, s.style_name, sc.css
-						FROM ' . $this->styles_table . ' s
-						LEFT JOIN ' . $this->customcss_table . ' sc
-							ON (sc.style_id = s.style_id)
-						WHERE s.style_id = ' . (int) $style_id;
-				}
+				$sql = 'SELECT style_id, css
+					FROM ' . $this->customcss_table . '
+					WHERE style_id = ' . (int) $style_id;
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
+
+				if ($style_id) {
+					$sql = 'SELECT style_name
+						FROM ' . $this->styles_table . '
+						WHERE style_id = ' . (int) $style_id;
+					$result = $this->db->sql_query($sql);
+					$style_name = $this->db->sql_fetchfield('style_name');
+					$this->db->sql_freeresult($result);
+				}
 
 				if ($this->request->is_set_post('submit'))
 				{
@@ -98,7 +95,8 @@ class acp_controller
 								WHERE style_id = " . (int) $style_id;
 						}
 						// delete if CSS is empty
-						else {
+						else
+						{
 							$sql = 'DELETE FROM ' . $this->customcss_table . '
 								WHERE style_id = ' . (int) $style_id;
 						}
@@ -109,15 +107,15 @@ class acp_controller
 						trigger_error($this->language->lang('CUSTOMCSS_SAVED') . adm_back_link($this->u_action));
 					}
 				}
-				else if ($row === false && $style_id !== 0)
+				else if ($style_id !== 0 && empty($style_name))
 				{
 					trigger_error($this->language->lang('CUSTOMCSS_STYLE_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->template->assign_vars([
 					'S_EDIT'		=> true,
-					'STYLE_ID'		=> $row['style_id'],
-					'STYLE_NAME'	=> $style_id !== 0 ? $row['style_name'] : self::ALL_STYLENAME,
+					'STYLE_ID'		=> $style_id,
+					'STYLE_NAME'	=> $style_id !== 0 ? $style_name : self::ALL_STYLENAME,
 					'STYLE_CSS'		=> $row['css'],
 				]);
 

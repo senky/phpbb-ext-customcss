@@ -32,17 +32,17 @@ class main_controller
 			WHERE style_id = ' . (int) $style_id . '
 				OR style_id = 0';
 		$result = $this->db->sql_query($sql, 3600);
-		$row = $this->db->sql_fetchrow($result);
+		$css = $this->db->sql_fetchfield('css');
 		$this->db->sql_freeresult($result);
 
-		if (!$row)
+		if (!$css)
 		{
 			$content = '';
 			$code = 404;
 		}
 		else
 		{
-			$content = $row['css'];
+			$content = htmlspecialchars_decode($css);
 			$code = 200;
 		}
 
